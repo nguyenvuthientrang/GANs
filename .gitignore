@@ -7,9 +7,11 @@ data/
 *.sublime-*
 *.pkl
 .DS_Store
-*.pth
+# *.pth
 *.png
 .swp
+outputs
+outputs/*
 sinkhorn-gan/None_mmd_eps1_niter1_batch100/
 sinkhorn-gan/None_sinkhorn_dual_eps10000_niter1_batch100
 sinkhorn-gan/None_sinkhorn_primal_eps10000_niter1_batch100
@@ -30,6 +32,7 @@ None_sw_eps1_niter1000_batch10000
 old_imsize_32_mmd_eps1_niter1_batch3200
 old_imsize_32_sw_eps1_niter1_batch3200
 old_imsize_32_sw_eps1_niter1000_batch3200
+TODO.md
 
 
 # Byte-compiled / optimized / DLL files

@@ -107,7 +107,7 @@ def update_average(model_tgt, model_src, beta):
     toggle_grad(model_src, True)
 
 def get_fid_stats(dataset):
-    stats = {'mnist':'/home/ubuntu/GANs/sinkhorn-gan/fid_stats/fid_stats_mnist.npz', 
-             'cifar10':'/home/ubuntu/GANs/sinkhorn-gan/fid_stats/fid_stats_cifar10.npz', 
-             'celeba':'/home/ubuntu/GANs/sinkhorn-gan/fid_stats/fid_stats_celeba.npz'}
+    stats = {'mnist':'sinkhorn-gan/fid_stats/fid_stats_mnist.npz', 
+             'cifar10':'sinkhorn-gan/fid_stats/fid_stats_cifar10.npz', 
+             'celeba':'sinkhorn-gan/fid_stats/fid_stats_celeba.npz'}
     return stats[dataset]
