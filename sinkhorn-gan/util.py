@@ -29,6 +29,10 @@ def get_args(parser):
     parser.add_argument('--experiment', default=None, help='Where to store samples and models')
     parser.add_argument("--clip_parameters", action="store", type=float, default=0.01, help="Clip parameters for Discriminator")
     parser.add_argument("--generator_steps", type=float, default=-10, help="number of generator optimization steps")
+    parser.add_argument("--use_bn", action="store_true", default=False,
+                    help="Whether to use batch norm for generator")
+    parser.add_argument("--feat_norm", action="store_true", default=False,
+                    help="Whether to normalize output of ")
     return parser
 
 

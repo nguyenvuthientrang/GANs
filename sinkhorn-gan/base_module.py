@@ -24,8 +24,8 @@ class Encoder(nn.Module):
             out_feat = cndf * 2
             main.add_module('pyramid_{0}-{1}_conv'.format(in_feat, out_feat),
                             nn.Conv2d(in_feat, out_feat, 4, 2, 1, bias=False))
-            main.add_module('pyramid_{0}_batchnorm'.format(out_feat),
-                            nn.BatchNorm2d(out_feat))
+            # main.add_module('pyramid_{0}_batchnorm'.format(out_feat),
+            #                 nn.BatchNorm2d(out_feat))
             main.add_module('pyramid_{0}_relu'.format(out_feat),
                             nn.LeakyReLU(0.2, inplace=True))
             cndf = cndf * 2
@@ -44,7 +44,7 @@ class Encoder(nn.Module):
 # input: batch_size * k * 1 * 1
 # output: batch_size * nc * image_size * image_size
 class Decoder(nn.Module):
-    def __init__(self, isize, nc, k=100, ngf=64):
+    def __init__(self, isize, nc, k=100, ngf=64, use_bn=False):
         super(Decoder, self).__init__()
         assert isize % 16 == 0, "isize has to be a multiple of 16"
 
@@ -55,15 +55,17 @@ class Decoder(nn.Module):
 
         main = nn.Sequential()
         main.add_module('initial_{0}-{1}_convt'.format(k, cngf), nn.ConvTranspose2d(k, cngf, 4, 1, 0, bias=False))
-        main.add_module('initial_{0}_batchnorm'.format(cngf), nn.BatchNorm2d(cngf))
+        if use_bn:
+            main.add_module('initial_{0}_batchnorm'.format(cngf), nn.BatchNorm2d(cngf))
         main.add_module('initial_{0}_relu'.format(cngf), nn.ReLU(True))
 
         csize = 4
         while csize < isize // 2:
             main.add_module('pyramid_{0}-{1}_convt'.format(cngf, cngf // 2),
                             nn.ConvTranspose2d(cngf, cngf // 2, 4, 2, 1, bias=False))
-            main.add_module('pyramid_{0}_batchnorm'.format(cngf // 2),
-                            nn.BatchNorm2d(cngf // 2))
+            if use_bn:
+                main.add_module('pyramid_{0}_batchnorm'.format(cngf // 2),
+                                nn.BatchNorm2d(cngf // 2))
             main.add_module('pyramid_{0}_relu'.format(cngf // 2),
                             nn.ReLU(True))
             cngf = cngf // 2

@@ -53,10 +53,11 @@ class NetG(nn.Module):
 # f_enc_X: batch_size * k * 1 * 1
 # f_dec_X: batch_size * nc * image_size * image_size
 class NetD(nn.Module):
-    def __init__(self, encoder, decoder):
+    def __init__(self, encoder, decoder, feat_norm=False):
         super(NetD, self).__init__()
         self.encoder = encoder
         self.decoder = decoder
+        self.feat_norm = feat_norm
 
     def forward(self, input):
         f_enc_X = self.encoder(input)
@@ -64,6 +65,9 @@ class NetD(nn.Module):
 
         f_enc_X = f_enc_X.view(input.size(0), -1)
         f_dec_X = f_dec_X.view(input.size(0), -1)
+
+        if self.feat_norm:
+            f_enc_X = f_enc_X / torch.norm(f_enc_X, dim=1, keepdim=True)
 
         return f_enc_X, f_dec_X
 
@@ -157,7 +161,7 @@ def run_gan(args,loss, batch_size):
     ######################################################################
     # construct encoder/decoder modules
     hidden_dim = args.nz
-    G_decoder = base_module.Decoder(args.image_size, args.nc, k=args.nz, ngf=64)
+    G_decoder = base_module.Decoder(args.image_size, args.nc, k=args.nz, ngf=64, use_bn=args.use_bn)
     D_encoder = base_module.Encoder(args.image_size, args.nc, k=hidden_dim, ndf=64)
     D_decoder = base_module.Decoder(args.image_size, args.nc, k=hidden_dim, ngf=64)
 
@@ -192,16 +196,11 @@ def run_gan(args,loss, batch_size):
     print("Starting Training Loop...")
     time = timeit.default_timer()
     gen_iterations = 0
+    errD=0
+    errG=0
     for t in range(args.max_iter):
-        data_iter = iter(trn_loader)
         i = 0
-        while (i < len(trn_loader)):
-            if i == len(trn_loader):
-                break
-
-            data = next(data_iter)
-            i += 1
-
+        for i, data in enumerate(trn_loader):
             if (i % (args.generator_steps + 1) == 0) or (i == -10):
                 # ---------------------------
                 #        Optimize over NetD
@@ -237,7 +236,7 @@ def run_gan(args,loss, batch_size):
 
                 D_losses.append(errD.item())
 
-            if (i % (args.generator_steps + 1) == 0) or (i == -10):
+            if (i % (args.generator_steps + 1) != 0) or (i == -10):
                 # ---------------------------
                 #        Optimize over NetG
                 # ---------------------------
