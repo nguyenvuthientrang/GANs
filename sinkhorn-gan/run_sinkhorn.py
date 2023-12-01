@@ -68,6 +68,7 @@ class NetD(nn.Module):
 
         if self.feat_norm:
             f_enc_X = f_enc_X / torch.norm(f_enc_X, dim=1, keepdim=True)
+            f_dec_X = f_dec_X / torch.norm(f_dec_X, dim=1, keepdim=True)
 
         return f_enc_X, f_dec_X
 
@@ -128,6 +129,8 @@ def run_gan(args,loss, batch_size):
     print('Logger dir: {}'.format(log_dir))
     print('Clip paramters: {}'.format(args.clip_parameters))
     print('Generator steps: {}'.format(args.generator_steps))
+    print('Normalize Ds output: {}'.format(args.feat_norm))
+    print('Generator batchnorm: {}'.format(args.use_bn))
 
     ######################################################################
     # Seed
